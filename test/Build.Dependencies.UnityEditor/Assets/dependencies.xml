@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"  ?>
+<dependencies xmlns="urn:schema-lwj:build-dependencies"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="
+  urn:schema-lwj:build-dependencies ../../../resources/lwj.build.dependencies.xsd"
+  log="false"
+  >
+  <item to="Assets">
+    <item from="TestSourceFiles" to="TestTargetFiles">
+      <item from="a.txt"  />
+      <item from="b/b.txt" to="b"/>
+      <item from="c">
+        <item from="c.txt" to="c"/>
+      </item>
+    </item> 
+  </item>
+</dependencies>

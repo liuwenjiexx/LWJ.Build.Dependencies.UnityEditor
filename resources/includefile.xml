@@ -1,0 +1,121 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<dependencies xmlns="urn:schema-lwj:build-dependencies"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="
+  urn:schema-lwj:build-dependencies lwj.build.dependencies.xsd"
+  >
+  <!--
+    这个配置文件的文件名必须是IncludeFile.xml，不区分大小写，第一个节点名必须为[dependencies]
+    The file name of the configuration file must be IncludeFile.xml, not case-sensitive, the first node name must be [dependencies]
+    
+    配置文件存储目录
+    Configuration file storage directory
+    
+    - UnityProject/ProjectSettings
+    - UnityProject/Assets
+    
+    *文件的当前目录为UnityProject目录, 指定Plugins目录配置为Assets/Plugins
+    *Files in the current directory to the UnityProject directory, specify the list of Plugins configured Assets/Plugins
+  -->
+  <!--    
+  -<dir/> 
+      要查找的源文件夹，如果from没有找到，则在父级文件夹查找，如: dir+/+include.from
+      The source folder you want to find, if from is not found, then the parent folder to find, such as: dir+/+include.from
+    格式：
+    Format:
+      <dir >directory</dir>   
+  
+  -<include/>
+      要包含外部的 dependencies.xml文件，dependencies文件内的当前目录为该文件目录，to目录为UnityProject
+      dependencies.xml to include external files, dependencies list of files in the current directory for the file, to list for UnityProject
+  格式：
+  Format:
+    <include>myDependencies.xml</include>
+  
+  -<item/>
+      导入的文件，可以嵌套使用，嵌套使用时路径为：from=base.from+/+from，to=base.to+/+to
+      Imported files can be nested, nested path is: from=base.from+/+from,to=base.to+/+to
+    属性值：
+    Attribute value:
+      from:  复制的源文件名或文件夹，如果from没有找到，则在父级目录查找
+                  Copy the source file name or folder, if from is not found, or the parent directory to find
+                  如果from为文件，则复制文件
+                  If from a file, the file is copied
+                  如果from为文件夹，则复制文件夹
+                  If the from folder, copy the folder
+      to:       复制的目标文件夹   
+                  Destination folder for copied
+      ext:      扩展名，不包含(.)，多个用逗号分隔，from=from+.+ext
+                   Extension is not included (. ), separated by commas
+    格式：  
+    Format:
+      <include from="dir|file"  to="dir" ext="extension[,extension]">
+        [<include />][<before/>][<after/>]
+      </include>
+  
+  -<before/>
+      可选的，在复制之前执行命令，当前目录为复制的源文件目录
+      Optionally, execute commands before copying, replication of the current directory for source files directory
+    属性值：
+    Attribute value:
+      ext:     可选的，过滤扩展名，多个用逗号分隔，如果为空则匹配全部
+                  Optional filtering extensions, separate multiple with a comma, if empty then match all
+      cmd:   要执行的shell命令
+                  The command to execute
+    格式：
+    Format:
+      <before ext="extension[,extension]">cmd</before>
+    样例:
+    Expamle:
+      .pdb > .mdb 
+      <before>pdb2mdb my.dll</before>
+  -<after/>
+      可选的，在复制之后执行命令，当前目录为复制的目标文件目录
+      Optionally, execute the command after copying, the current directory is copied to the destination file directory
+    属性值：
+    Attribute value:
+      ext:    可选的，过滤扩展名，多个用逗号分隔，如果为空则匹配全部
+      cmd:  要执行的命令
+                  The command to execute
+    格式：
+    Format:
+      <after ext="extension[,extension]">cmd</after>
+   -->
+
+  <!-- Example
+   ###
+  ./a/a.dll
+  ./a/b/c/UnityProject
+  
+  <item to="Assets">
+    <item from="a.dll" to="Plugins" />
+  </item>
+  ###
+  ./a/my.dependencies.xml
+  
+  <import>my.dependencies.xml</import>
+  ###
+  ./a/Build/Debug/my.dll
+  ./a/Build/Debug/my.pdb
+  ./a/Build/Debug/my.dll.mdb
+  
+  .mdb file auto generated, pdb2mdb.exe in [%UNITY_HOME%\Data\Mono\lib\mono\2.0]
+  
+    <dir>Build/Debug</dir> 
+    <item to="Assets">
+      <item to="Plugins">
+        <item from="my" ext="dll,pdb,dll.mdb" >
+          <before ext="dll">pdb2mdb a.dll</before>
+        </item>
+      </item>
+    </item>
+  ###   
+  -->
+
+  <item to="Assets">
+    <item to="Plugins">
+    </item>
+    <item to="Editor/Plugins">
+    </item>
+  </item>
+</dependencies>
