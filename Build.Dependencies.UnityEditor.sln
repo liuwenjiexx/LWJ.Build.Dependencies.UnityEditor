@@ -5,12 +5,12 @@ VisualStudioVersion = 15.0.27130.2010
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Resources", "Resources", "{485867CD-5638-4628-BFA6-C7F4C10DAD0E}"
 	ProjectSection(SolutionItems) = preProject
-		..\Resources\lwj.build.dependencies.xsd = ..\Resources\lwj.build.dependencies.xsd
+		Resources\lwj.build.dependencies.xsd = Resources\lwj.build.dependencies.xsd
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{701C2E80-A2E8-4C69-8C6C-81AFDF59D8DA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Build.Dependencies.UnityEditor", "Build.Dependencies.UnityEditor\Build.Dependencies.UnityEditor.csproj", "{3CD58F00-A5F7-44DE-8244-927F938A2F8E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Build.Dependencies.UnityEditor", "src/Build.Dependencies.UnityEditor\Build.Dependencies.UnityEditor.csproj", "{3CD58F00-A5F7-44DE-8244-927F938A2F8E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
