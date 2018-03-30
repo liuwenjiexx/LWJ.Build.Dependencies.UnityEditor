@@ -452,45 +452,50 @@ namespace LWJ.Build.Dependencies.UnityEditor
             startInfo.UseShellExecute = false;
             startInfo.RedirectStandardInput = true;
             startInfo.WorkingDirectory = baseDir;
-
+     
 #if DEBUG_CMD
             
             startInfo.CreateNoWindow = false;
             startInfo.WindowStyle = ProcessWindowStyle.Normal;
             startInfo.RedirectStandardError = false;
 #else
-            
+
             startInfo.CreateNoWindow = true;
             startInfo.RedirectStandardError = true;
             startInfo.StandardErrorEncoding = Encoding.Default;
 #endif
-            
+           
             using (var process = Process.Start(startInfo))
             {
                 Encoding encoding = process.StandardInput.Encoding;
 
                 var input = process.StandardInput;
-
-                input.WriteLine();
-                input.WriteLine(cmdText);
-                input.Flush();
+          
+                input.WriteLine(); 
+                input.WriteLine(cmdText); 
+                input.Flush();  
 
                 input.WriteLine("exit");
-                input.Flush();
-                process.WaitForExit();
+                input.Flush(); 
+                
 #if !DEBUG_CMD
                 using (MemoryStream ms = new MemoryStream())
                 using (var reader = new StreamReader(ms, Encoding.UTF8))
                 {
+              
                     process.WaitForExit();
-
-                    string error = process.StandardError.ReadToEnd();
+            
+                    string error = process.StandardError.ReadToEnd();  
                     if (!string.IsNullOrEmpty(error))
                     {
+                       
                         //throw new Exception(error);
-                        Debug.LogError(error);
+                        Debug.LogError(error); 
+                        //错误:句柄无效
                     }
+                  
                 }
+              
 #endif
             }
 
