@@ -1,4 +1,5 @@
-﻿using System;
+﻿//#define DEBUG_CMD
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -52,8 +53,10 @@ namespace LWJ.Build.Dependencies.UnityEditor
         private double updateInterval;
         private bool logInfoEnable;
         private StringBuilder log;
+        private List<FileDependency> children = new List<FileDependency>();
 
         static DateTime mainNextUpdateTime;
+
 
         public FileDependency(string sourceFile)
             : this(sourceFile, false)
@@ -144,7 +147,7 @@ namespace LWJ.Build.Dependencies.UnityEditor
             List<string> dirList = null;
             XmlAttribute attr;
 
-            logInfoEnable = LogInfoEnable;
+            logInfoEnable = false;
             updateInterval = UpdateInterval;
 
 
@@ -202,6 +205,7 @@ namespace LWJ.Build.Dependencies.UnityEditor
             this.items = items.ToArray();
         }
 
+
         private void ParseImportNode(XmlNode node)
         {
             string path = (node.InnerText ?? string.Empty).Trim();
@@ -213,11 +217,12 @@ namespace LWJ.Build.Dependencies.UnityEditor
                 if (ContainsIncludeFile(fullPath))
                     return;
             }
-
+            FileDependency fd;
             if (fullPath != null)
-                new FileDependency(fullPath, true);
+                fd = new FileDependency(fullPath, true);
             else
-                new FileDependency(path, true);
+                fd = new FileDependency(path, true);
+            fd.children.Add(this);
         }
 
         private void ParseIncludeNode(IncludeItemInfo parent, XmlNode node, List<IncludeItemInfo> items)
@@ -266,6 +271,21 @@ namespace LWJ.Build.Dependencies.UnityEditor
             }
 
 
+        }
+
+        private bool _IsLogEnabled
+        {
+            get
+            {
+                if (LogInfoEnable || logInfoEnable)
+                    return true;
+                foreach (var item in children)
+                {
+                    if (item._IsLogEnabled)
+                        return true;
+                }
+                return false;
+            }
         }
 
         private bool IsExtNameMatch(string extName, XmlNode node)
@@ -333,7 +353,7 @@ namespace LWJ.Build.Dependencies.UnityEditor
 
                 if (Log.Length > 0)
                 {
-                    if (logInfoEnable)
+                    if (_IsLogEnabled)
                         Debug.Log(Log.ToString());
                     Log.Length = 0;
                 }
@@ -363,15 +383,18 @@ namespace LWJ.Build.Dependencies.UnityEditor
                     if (CanUpdateFile(fullFromPath, fullToPath))
                     {
                         if (!string.IsNullOrEmpty(item.Before))
-                        {
+                        { 
                             ExecuteCommand(Path.GetDirectoryName(fullFromPath), item.Before);
                         }
                         changed |= UpdateFile(item, fullFromPath, fullToPath);
 
                         if (!string.IsNullOrEmpty(item.After))
-                        {
+                        { 
                             ExecuteCommand(Path.GetDirectoryName(fullFromPath), item.After);
                         }
+                    }
+                    else
+                    { 
                     }
 
                     isCompleted = true;
@@ -389,7 +412,7 @@ namespace LWJ.Build.Dependencies.UnityEditor
                             if (!isUpdate)
                             {
                                 if (!string.IsNullOrEmpty(item.Before))
-                                {
+                                { 
                                     ExecuteCommand(fullFromPath, item.Before);
                                 }
                             }
@@ -401,7 +424,7 @@ namespace LWJ.Build.Dependencies.UnityEditor
                     if (isUpdate)
                     {
                         if (!string.IsNullOrEmpty(item.After))
-                        {
+                        { 
                             ExecuteCommand(fullFromPath, item.After);
                         }
                     }
@@ -423,16 +446,25 @@ namespace LWJ.Build.Dependencies.UnityEditor
         {
             if (string.IsNullOrEmpty(cmdText))
                 return;
+            Debug.LogFormat("execute command\r\n{0}\r\n{1}", cmdText, baseDir);
 
             ProcessStartInfo startInfo = new ProcessStartInfo("cmd");
-            startInfo.CreateNoWindow = true;
             startInfo.UseShellExecute = false;
-            startInfo.RedirectStandardError = true;
             startInfo.RedirectStandardInput = true;
-
             startInfo.WorkingDirectory = baseDir;
-            startInfo.StandardErrorEncoding = Encoding.Default;
 
+#if DEBUG_CMD
+            
+            startInfo.CreateNoWindow = false;
+            startInfo.WindowStyle = ProcessWindowStyle.Normal;
+            startInfo.RedirectStandardError = false;
+#else
+            
+            startInfo.CreateNoWindow = true;
+            startInfo.RedirectStandardError = true;
+            startInfo.StandardErrorEncoding = Encoding.Default;
+#endif
+            
             using (var process = Process.Start(startInfo))
             {
                 Encoding encoding = process.StandardInput.Encoding;
@@ -442,20 +474,24 @@ namespace LWJ.Build.Dependencies.UnityEditor
                 input.WriteLine();
                 input.WriteLine(cmdText);
                 input.Flush();
+
                 input.WriteLine("exit");
                 input.Flush();
-
+                process.WaitForExit();
+#if !DEBUG_CMD
                 using (MemoryStream ms = new MemoryStream())
                 using (var reader = new StreamReader(ms, Encoding.UTF8))
                 {
                     process.WaitForExit();
 
-                    //string error = process.StandardError.ReadToEnd();
-                    //if (!string.IsNullOrEmpty(error))
-                    //{
-                    //    throw new Exception(error);
-                    //}
+                    string error = process.StandardError.ReadToEnd();
+                    if (!string.IsNullOrEmpty(error))
+                    {
+                        //throw new Exception(error);
+                        Debug.LogError(error);
+                    }
                 }
+#endif
             }
 
         }
@@ -537,10 +573,9 @@ namespace LWJ.Build.Dependencies.UnityEditor
         {
             DateTime fromFileLastWriteTime = File.GetLastWriteTimeUtc(fromFile);
             DateTime toFileLastWriteTime;
-            if (File.Exists(toFile))
-                toFileLastWriteTime = File.GetLastWriteTimeUtc(toFile);
-            else
-                toFileLastWriteTime = DateTime.MinValue;
+            if (!File.Exists(toFile))
+                return true;
+            toFileLastWriteTime = File.GetLastWriteTimeUtc(toFile);
             if (fromFileLastWriteTime != toFileLastWriteTime)
             {
                 return true;
@@ -633,7 +668,7 @@ namespace LWJ.Build.Dependencies.UnityEditor
                     changed |= item.IsSourceFileChanged;
                     if (changed)
                     {
-                        if (item.logInfoEnable)
+                        if (item._IsLogEnabled)
                             Debug.LogFormat("reload all config.\r\nfile changed: {0}", item.sourceFile);
                         break;
                     }
