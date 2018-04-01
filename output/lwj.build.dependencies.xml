@@ -5,7 +5,7 @@
   urn:schema-lwj:build-dependencies ../../LWJ.Build.Dependencies.UnityEditor/resources/lwj.build.dependencies.xsd"
   >
   <dir>build/debug</dir>
-  <item to="Assets/LWJ"> 
+  <item to="Assets/LWJ/Dependencies"> 
     <item to="Editor/Plugins">
       <item from="LWJ.Build.Dependencies.UnityEditor"  ext="dll,dll.meta" >
       </item>
