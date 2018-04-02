@@ -1,5 +1,7 @@
-Library
-Build.Dependencies.UnityEditor.Tests.csproj
-Build.Dependencies.UnityEditor.Tests.sln
-Assets/TestTargetFiles
-Assets/TestTargetFiles.meta
+/Library/
+/Temp/
+/ProjectSettings/ProjectVersion.txt
+/*.csproj
+/*.sln
+/Assets/TestTargetFiles
+/Assets/TestTargetFiles.meta

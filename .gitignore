@@ -286,8 +286,5 @@ __pycache__/
 *.btm.cs
 *.odx.cs
 *.xsd.cs
-/test/Build.Dependencies.UnityEditor/Library
-/test/Build.Dependencies.UnityEditor/Build.Dependencies.UnityEditor.csproj
-/test/Build.Dependencies.UnityEditor/Build.Dependencies.UnityEditor.sln
-/test/Build.Dependencies.UnityEditor/Temp
-/test/Build.Dependencies.UnityEditor/Assets/TestTargetFiles
+
+!/output/*
