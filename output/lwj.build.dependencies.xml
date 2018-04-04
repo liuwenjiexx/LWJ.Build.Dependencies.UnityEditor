@@ -6,7 +6,7 @@
   >
   <dir>build/debug</dir>
   <item to="Assets/LWJ/Dependencies"> 
-    <item to="Editor/Plugins">
+    <item to="Editor">
       <item from="LWJ.Build.Dependencies.UnityEditor"  ext="dll,dll.meta" >
       </item>
     </item>
